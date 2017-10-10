@@ -113,10 +113,17 @@ static void *readwrite_routine( void *arg )
 		if ( fd < 0 )
 		{
 			fd = socket(PF_INET, SOCK_STREAM, 0);
+            if(fd < 0) {
+		        printf("socket ERROR ret %d %d:%s\n", fd, errno, strerror(errno));
+                continue;
+            }
+
 			struct sockaddr_in addr;
 			SetAddr(endpoint->ip, endpoint->port, addr);
 			ret = connect(fd,(struct sockaddr*)&addr,sizeof(addr));
-		    printf("getsockopt ERROR ret %d %d:%s\n", ret, errno, strerror(errno));
+			if(ret < 0) {
+		        printf("getsockopt ERROR ret %d %d %d:%s\n", fd, ret, errno, strerror(errno));
+            }
 			if ( errno == EALREADY || errno == EINPROGRESS )
 			{       
 				struct pollfd pf = { 0 };
